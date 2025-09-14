@@ -1,0 +1,105 @@
+{
+  "source_file": "../data/restaurant_regulations.pdf",
+  "extraction_date": "2024-09-13",
+  "total_pages_processed": "10-50",
+  "regulations": [
+    {
+      "id": 1,
+      "category": "health",
+      "hebrew_text": "על פי כל דין:לבקשה לרישיון יצורפו המסמכים הבאים, בנוסף לכל",
+      "source_page": "10-48",
+      "priority": "high"
+    },
+    {
+      "id": 2,
+      "category": "health",
+      "hebrew_text": "פי כל דין, והם יבדקו בבדיק",
+      "source_page": "10-48",
+      "priority": "high"
+    },
+    {
+      "id": 3,
+      "category": "health",
+      "hebrew_text": "ע\"י נציג משרד הבריאות",
+      "source_page": "10-48",
+      "priority": "high"
+    },
+    {
+      "id": 4,
+      "category": "health",
+      "hebrew_text": ",כמפורט למעלה, מומלץ לקרר את המזון",
+      "source_page": "10-48",
+      "priority": "high"
+    },
+    {
+      "id": 5,
+      "category": "health",
+      "hebrew_text": "על פי ובהתאם לתקנות",
+      "source_page": "10-48",
+      "priority": "high"
+    },
+    {
+      "id": 6,
+      "category": "health",
+      "hebrew_text": "בידי המנהל לעשות כן",
+      "source_page": "10-48",
+      "priority": "high"
+    },
+    {
+      "id": 7,
+      "category": "health",
+      "hebrew_text": "לביצוע פעולות כיבוי והצלה",
+      "source_page": "10-48",
+      "priority": "high"
+    },
+    {
+      "id": 8,
+      "category": "health",
+      "hebrew_text": "לספק מים קרים ומים חמים",
+      "source_page": "10-48",
+      "priority": "high"
+    },
+    {
+      "id": 9,
+      "category": "health",
+      "hebrew_text": "לקיים את הדרישות המפורטות במדריך נהלים ותקנות  לטיפול במזון",
+      "source_page": "10-48",
+      "priority": "high"
+    },
+    {
+      "id": 10,
+      "category": "health",
+      "hebrew_text": "לקבל את אישור משרד הבריאות",
+      "source_page": "10-48",
+      "priority": "high"
+    },
+    {
+      "id": 11,
+      "category": "health",
+      "hebrew_text": "להישמר בטמפרטורה של 0  עד3 לזיוס עד לחימום",
+      "source_page": "10-48",
+      "priority": "high"
+    },
+    {
+      "id": 12,
+      "category": "health",
+      "hebrew_text": "שימוש בחומרי הדברה",
+      "source_page": "10-48",
+      "priority": "high"
+    },
+    {
+      "id": 13,
+      "category": "fire_safety",
+      "hebrew_text": "6.2.1. אגף אש - חלק מבניין המופרד מחלקי הבניין האחרים באמצעות אלמנטים עמידי אש,",
+      "source_page": "50+",
+      "priority": "critical"
+    },
+    {
+      "id": 14,
+      "category": "fire_safety",
+      "hebrew_text": "כמשמעותה בתקן ישראלי ת\"י 1212  דלתות אש - עמידות אש.",
+      "source_page": "50+",
+      "priority": "critical"
+    }
+  ]
+}
