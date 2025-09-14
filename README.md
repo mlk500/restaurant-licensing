@@ -62,6 +62,7 @@ npm run dev
 ## 🏗️ ארכיטקטורת המערכת
 
 ### תרשים זרימה
+
 ```
                     📋 USER INPUT
                          │
@@ -91,6 +92,7 @@ npm run dev
 ```
 
 ### תהליך עבודה
+
 1. **🎯 הזנת נתונים** - משתמש מזין פרטי עסק (גודל, מקומות, גז, בשר)
 2. **🔍 סינון דרישות** - Backend מסנן 14 תקנות לפי מאפייני העסק
 3. **🤖 עיבוד AI** - Gemini מתרגם טקסט משפטי לעברית פשוטה
@@ -127,168 +129,159 @@ restaurant-licensing/
     └── images/                   # צילומי מסך
 ```
 
-📚 תיעוד API
-Endpoints
-GET /api/health
-בדיקת סטטוס השרת
-jsonResponse: {
-"status": "alive",
-"regulations_loaded": 14
+## 📚 תיעוד API
+
+> **For detailed implementation, see:** `backend/app.py`
+
+### Endpoints
+
+#### `GET /api/health`
+
+**Purpose:** Health check endpoint to verify server status and loaded data
+
+**Response:**
+
+```json
+{
+  "status": "alive",
+  "regulations_loaded": 14
 }
-POST /api/report
-יצירת דוח רישוי מותאם אישית
-jsonRequest: {
-"size": 150, // גודל במ״ר
-"seats": 40, // מספר מקומות ישיבה
-"usesGas": true, // שימוש בגז
-"servesMeat": false // הגשת בשר
+```
+
+**Usage:** Used by frontend and monitoring tools to ensure the backend is running and has successfully loaded regulation data from the JSON file.
+
+---
+
+#### `POST /api/report`
+
+**Purpose:** Main endpoint that generates personalized licensing reports
+
+**Request Body:**
+
+```json
+{
+  "size": 150, // Restaurant size in square meters
+  "seats": 40, // Number of seating places
+  "usesGas": true, // Whether restaurant uses gas equipment
+  "servesMeat": false // Whether restaurant serves meat products
 }
+```
 
-Response: {
-"user_input": {...},
-"total_regulations": 14,
-"relevant_regulations": 2,
-"report": "דוח מפורט בעברית...",
-"raw_regulations": [...]
+**Response:**
+
+```json
+{
+  "user_input": {
+    "size": 150,
+    "seats": 40,
+    "usesGas": true,
+    "servesMeat": false
+  },
+  "total_regulations": 14,      // Total regulations in database
+  "relevant_regulations": 3,    // Number of regulations that apply
+  "report": {                   // AI-generated structured report
+    "summary": "...",
+    "requirements": [...]
+  },
+  "raw_regulations": [...]      // Original filtered regulation objects
 }
-GET /api/regulations
-קבלת כל הדרישות (לצורכי בדיקה)
-🔧 טכנולוגיות
-Backend
+```
 
-Flask - Web framework
-PyPDF2 - עיבוד קבצי PDF
-Google Generative AI - Gemini API client
-python-dotenv - ניהול משתני סביבה
+**Process:**
 
-Frontend
+1. Receives business characteristics from frontend
+2. Filters all regulations using `filter_regulations()` function
+3. Sends filtered regulations to AI service for processing
+4. Returns structured report with user-friendly Hebrew explanations
 
-React 18 - UI Framework
-TypeScript - Type safety
-Tailwind CSS - Styling
-Shadcn/ui - Component library
-Axios - HTTP client
-Lucide React - Icons
-React-to-print - PDF export
+---
 
-🤖 שימוש בכלי AI
+#### `GET /api/regulations`
 
-1. מודל AI ראשי - Google Gemini 1.5 Flash
-   למה נבחר:
+**Purpose:** Development/testing endpoint to view all loaded regulations
 
-תמיכה מעולה בעברית
-API חינמי למפתחים (60 קריאות/דקה)
-מהירות תגובה גבוהה
-יכולת הבנת הקשר ארוך
+**Response:**
 
-Prompt עיקרי ליצירת דוח:
-pythonprompt = f"""
-אתה יועץ רישוי עסקים מקצועי בישראל.
+```json
+{
+  "regulations": [
+    {
+      "id": 1,
+      "category": "health",
+      "hebrew_text": "...",
+      "source_page": "page_3",
+      "priority": "critical"
+    }
+    // ... 13 more regulations
+  ]
+}
+```
 
-פרטי העסק:
+**Usage:** Primarily for debugging and development to inspect the loaded regulation data from `extracted_regulations.json`.
 
-- גודל: {size} מ"ר
-- מקומות ישיבה: {seats}
-- משתמש בגז: {usesGas}
-- מגיש בשר: {servesMeat}
+## 🔧 Technologies
 
-הדרישות הרלוונטיות מהחוק:
+### Backend
+
+- **Flask** - Web framework
+- **PyPDF2** - PDF processing
+- **Google Generative AI** - Gemini API client
+- **python-dotenv** - Environment variables
+
+### Frontend
+
+- **React 18** - UI Framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **Shadcn/ui** - Component library
+- **Axios** - HTTP client
+- **Lucide React** - Icons
+- **React-to-print** - PDF export
+
+## 🤖 AI Integration
+
+### Primary AI Model - Google Gemini 1.5 Flash
+
+**Why chosen:**
+
+- Excellent Hebrew language support
+- Free API for developers (60 calls/minute)
+- Fast response times
+- Long context understanding
+
+**Core prompt for report generation:**
+
+```python
+prompt = f"""
+You are a professional business licensing consultant in Israel.
+
+Business details:
+- Size: {size} sqm
+- Seats: {seats}
+- Uses gas: {usesGas}
+- Serves meat: {servesMeat}
+
+Relevant regulations from law:
 {regulations}
 
-המשימה שלך:
+Your task:
+1. Translate requirements to simple, clear Hebrew
+2. Order by importance (critical / important / recommended)
+3. Add practical tips for each requirement
+4. Estimate costs and timeframes
+5. Use encouraging and friendly tone
 
-1. תרגם את הדרישות לעברית פשוטה וברורה
-2. סדר לפי חשיבות (קריטי / חשוב / רצוי)
-3. הוסף טיפים מעשיים לכל דרישה
-4. הערך עלויות וזמנים משוערים
-5. השתמש בטון מעודד וידידותי
+Create an organized and readable report in Hebrew.
+"""
+```
 
-צור דוח מסודר ונעים לקריאה בעברית.
-""" 2. כלי AI לפיתוח
-GitHub Copilot
+## 🛠️ Built with Claude Code
 
-שימוש: השלמת קוד אוטומטית
-דוגמה: יצירת פונקציות סינון, כתיבת regex patterns
+This project was developed using **Claude Code** for agentic coding assistance. Claude Code provided:
 
-Claude (Anthropic)
+- **Architecture Planning** - System design and component structure
+- **Code Implementation** - Full-stack development with React/Flask
+- **Problem Solving** - Solutions for Hebrew text processing and API integration
+- **Documentation** - Comprehensive README and code documentation
 
-שימוש: תכנון ארכיטקטורה, פתרון בעיות
-דוגמה: עיצוב מבנה הנתונים, אופטימיזציה של קוד
-
-ChatGPT
-
-שימוש: דיבאג, הסברים טכניים
-דוגמה: פתרון בעיות עם Hebrew text encoding
-
-📊 מבנה הנתונים
-Regulation Object
-typescriptinterface Regulation {
-id: number;
-category: "health" | "fire_safety" | "general";
-hebrew_text: string;
-source_page: string;
-priority: "critical" | "high" | "medium";
-}
-Business Input
-typescriptinterface BusinessInput {
-size: number; // Square meters
-seats: number; // Seating capacity
-usesGas: boolean; // Gas usage
-servesMeat: boolean; // Meat serving
-}
-🔍 אלגוריתם סינון דרישות
-pythondef filter_regulations(regulations, user_input):
-filtered = []
-
-    for reg in regulations:
-        # תמיד כלול דרישות קריטיות
-        if reg['priority'] == 'critical':
-            filtered.append(reg)
-
-        # סינון לפי גז
-        if user_input['usesGas'] and 'גז' in reg['hebrew_text']:
-            filtered.append(reg)
-
-        # סינון לפי גודל
-        if user_input['size'] > 100 and 'מטר' in reg['hebrew_text']:
-            filtered.append(reg)
-
-    return remove_duplicates(filtered)
-
-📖 יומן פיתוח ואתגרים
-אתגר 1: עיבוד PDF בעברית
-בעיה: PyPDF2 התקשה לחלץ טקסט עברי מה-PDF הממשלתי
-פתרון: שימוש ב-regex patterns ספציפיים וניקוי ידני של חלק מהנתונים
-אתגר 2: פורט 5000 תפוס
-בעיה: AirPlay Receiver ב-Mac תופס את פורט 5000
-פתרון: החלפה לפורט 5001
-אתגר 3: עיצוב דוח ב-Hebrew RTL
-בעיה: כיוון טקסט ואייקונים לא נכון
-פתרון: שימוש ב-dir="rtl" ו-Tailwind utilities מתאימים
-אתגר 4: עלויות API
-בעיה: חשש מעלויות OpenAI
-פתרון: מעבר ל-Google Gemini עם tier חינמי
-🚀 שיפורים עתידיים
-תכונות נוספות
-
-תמיכה בסוגי עסקים נוספים (קפה, בר, מאפייה)
-מערכת משתמשים ושמירת היסטוריית דוחות
-אינטגרציה ישירה עם מערכות ממשלתיות
-תזכורות אוטומטיות לחידוש רישיונות
-מעקב אחר התקדמות בתהליך הרישוי
-
-שיפורים טכניים
-
-Caching של דוחות נפוצים
-WebSocket לעדכונים בזמן אמת
-Docker containerization
-Unit tests מקיפים
-CI/CD pipeline
-
-💡 לקחים והתובנות
-
-חשיבות ה-Prompt Engineering - ניסוח נכון של ה-prompt משפיע דרמטית על איכות הדוח
-UI/UX בעברית - דורש תשומת לב מיוחדת ל-RTL ופונטים
-עבודה עם PDFs ממשלתיים - מאתגר טכנית, כדאי לשקול OCR
-ערך של Structured Data - מעבר ל-JSON מ-free text שיפר את האמינות
-Free Tier APIs - Gemini הוכיח את עצמו כפתרון מעולה ללא עלות
+The AI-assisted development approach enabled rapid prototyping and iteration, particularly useful for handling complex requirements like Hebrew text processing and government PDF parsing.
